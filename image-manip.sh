@@ -17,7 +17,9 @@ usage(){
 
 convert $1 \
 	-resize "$width"x"$height"^ -gravity center -extent "$width"x"$height" \
-	-colorspace gray -format "GIF" -linear-stretch 50x50% \
+	-colorspace gray -format "BGR" -linear-stretch 50x50% \
  	bgr:- | \
 	bbe -e "y/\x00\xff/01/g" | \
+	sed "s/111/1/g" | \
+	sed "s/000/0/g" | \
 	fold --width=$width
