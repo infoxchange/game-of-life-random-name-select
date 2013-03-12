@@ -31,16 +31,30 @@ function updateRaster(selector, data){
 	});
 }
 
-$(document).ready(function () {
+function update() {
 	var asdf = $('#asdf');
 	$.getJSON('/all', function (data) {
+		var arr = [];
 		for (var user in data) {
-			var div = document.createElement('div');
-			initRaster(div);
-			asdf.append(user);
+			arr.push(data[user]);
+		}
+		arr.sort(function (a, b) {
+			return b.score - a.score;
+		});
+		asdf.html('');
+		for (var i = 0; i < arr.length; i++) {
+			var div = $('<div />');
+			var tdiv = $('<div />');
+			initRaster(tdiv);
+			updateRaster(tdiv, arr[i].data);
+			div.append(arr[i].user + " (" + arr[i].score + ")");
+			div.append(tdiv);
 			asdf.append(div);
-			updateRaster(div, data[user].data);
-			console.log(user.score);
 		}
 	});
+	setTimeout(update, 1000);
+}
+
+$(document).ready(function () {
+	update();
 });
