@@ -23,12 +23,7 @@ app.configure(function() {
   app.use(passport.initialize());
 });
 
-app.get('/', function(req, res){
-  var body = '<html><body><a href="/auth/google">Google</a></body></html>';
-  res.setHeader('Content-Type', 'text/html');
-  res.setHeader('Content-Length', body.length);
-  res.end(body);
-});
+app.use(express.static(__dirname + '/public'));
 
 app.get('/auth/google', passport.authenticate('google'));
 
