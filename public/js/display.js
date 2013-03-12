@@ -26,7 +26,21 @@ function updateRaster(selector, data){
 		var i, j;
 		i = pos % width;
 		j = Math.floor(pos / height);
-		$(this).css('background-color', ((data[j][i] == '1') ? 'white' : 'black'));
+		$(this).css('background-color', ((data[j][i] == '0') ? 'white' : 'black'));
 		pos++;
 	});
 }
+
+$(document).ready(function () {
+	var asdf = $('#asdf');
+	$.getJSON('/all', function (data) {
+		for (var user in data) {
+			var div = document.createElement('div');
+			initRaster(div);
+			asdf.append(user);
+			asdf.append(div);
+			updateRaster(div, data[user].data);
+			console.log(user.score);
+		}
+	});
+});
