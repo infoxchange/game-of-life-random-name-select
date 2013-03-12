@@ -25,7 +25,7 @@ function currentCycle() {
 function _getJob() {
   for (var i = 0; i < queue.length; i++) {
     if (queue[i].length)
-      return queue[i].shift();
+      return { cycle: i, user: queue[i].shift() };
   }
   return undefined;
 }
@@ -48,6 +48,16 @@ function last(user) { // return { cycle: integer, data: bit matrix }
   return state[user][cycle];
 }
 
+function users() {
+  var res = [];
+  for (var u in state) {
+    if (state.hasOwnProperty(u)) {
+      res.push(u);
+    }
+  }
+  return res;
+}
+
 function all() {
   var res = {};
   for (var u in state) {
@@ -58,16 +68,69 @@ function all() {
   return res;
 }
 
+function score(user) {
+  var data = last(user);
+  var res = 0;
+  for (var y = 0; y < data.length; y++) {
+    for (var x = 0; x < data.length; x++) {
+      if (data[y][x]) { res++; }
+    }
+  }
+  return res;
+}
+
+function draw() {
+  var max = undefined;
+  var res = false;
+  for (var u in state) {
+    if (state.hasOwnProperty(u)) {
+      var us = score(u);
+      if (typeof(max) === 'undefined') {
+        max = us;
+      } else if (max == us) {
+        res = true;
+      } else if (max < us) {
+        max = us;
+        res = false;
+      }
+    }
+  }
+  return res;
+}
+
+// Actual running
+
+var timers = require('timers');
+
+var scheduled = false;
+
+var min_iterations = 1000;
+
+var per_timer = 1000;
+
+function start() {
+  if (scheduled) return;
+  timers.setTimeout(run, 0);
+  scheduled = true;
+}
+
 function run() {
+  scheduled = false;
   var job = _getJob();
-  if (typeof(job) === 'undefined') return;
+  if (typeof(job) === 'undefined') {
+    return;
+  }
   var user = job.user;
   var cycle = job.cycle;
+  if (cycle >= min_iterations) {
+    return;
+  }
   var data = state[user][cycle];
   var newdata = process(data);
   cycle++;
   state[user][cycle] = newdata;
   _addJob(user, cycle);
+  start();
 }
 
 // Processing
@@ -112,6 +175,8 @@ function process(data) {
 
 exports.addJob = addJob;
 exports.all = all;
+exports.draw = draw;
 exports.currentCycle = currentCycle;
 exports.last = last;
 exports.run = run;
+exports.score = score;
