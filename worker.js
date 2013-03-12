@@ -32,8 +32,11 @@ function run() {
     queue.push({ user: user, cycle: cycle });
 }
 
-function n(v) {
-    return typeof v === 'undefined' ? 0 : v;
+function n(data, x, y) {
+    var r = data[y];
+    if (typeof r === 'undefined') return 0;
+    r = r[x];
+    return typeof r === 'undefined' ? 0 : r;
 }
 
 function process(data) {
@@ -44,14 +47,14 @@ function process(data) {
         newdata[y] = Array(width);
         for (var x = 0; x < width; x++) {
             var around =
-                n(data[y - 1][x - 1]) +
-                n(data[y - 1][x    ]) +
-                n(data[y - 1][x + 1]) +
-                n(data[y    ][x - 1]) +
-                n(data[y    ][x + 1]) +
-                n(data[y + 1][x - 1]) +
-                n(data[y + 1][x    ]) +
-                n(data[y + 1][x + 1]);
+                n(data, x - 1, y - 1) +
+                n(data, x - 1, y    ) +
+                n(data, x - 1, y + 1) +
+                n(data, x    , y - 1) +
+                n(data, x    , y + 1) +
+                n(data, x + 1, y - 1) +
+                n(data, x + 1, y    ) +
+                n(data, x + 1, y + 1);
 
             var res;
             if (around < 2 || around > 3)
