@@ -21,20 +21,35 @@ passport.use(new GoogleStrategy({
     clientSecret: config.googleApi.clientSecret,
     callbackURL: 'http://localhost:3000/auth/google/callback'
   },
-  function(token, tokenSecret, profile, done) {
-    /*
-     * do the login somehow..... WIP <_<
-     */
+  function(accessToken, refreshToken, profile, done) {
+    process.nextTick(function () {
+      return done(null, profile);
+    });
   }
 ));
+
+passport.serializeUser(function(user, done) {
+  var email;
+  if ("emails" in user) {
+    email = user.emails[0].value;
+  }
+  done(null, {
+    displayName: user.displayName,
+    name: user.name,
+    email: email
+  });
+});
+
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+});
 
 function setupRoutes(app) {
   /*****************
    * All
    */
   app.get('/account', ensureAuthenticated, function(req, res){
-    console.dir({user:res.user})
-    res.redirect('/#' + res.user)
+    res.redirect('/#' + req.user.email)
   });
   app.get('/logout', function(req, res){
     req.logout();
@@ -55,7 +70,7 @@ function setupRoutes(app) {
 
   app.get('/auth/google/callback', passport.authenticate(
       'google',
-      { failureRedirect: '/auth/failed' }
+      { failureRedirect: '/auth/failed.html' }
     ),
     function(req, res) {
       res.redirect('/account')
