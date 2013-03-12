@@ -1,12 +1,27 @@
 <html>
   <head>
     <title>Life is random!</title>
+
+		<script src="js/jquery-1.9.1.min.js"></script>
+		<script src="js/display.js"></script>
+
+		<style type="text/css">
+			table {
+				border-collapse: collapse;
+			}
+
+			table td {
+				padding: 0 0 0 0;
+			}
+		</style>
   </head>
   <body>
     <h1>Logged in as: <span id="email">Nobody D:</span></h1>
-    
+ 
     <h2>Log in with:</h2>
     <a href="/auth/google"><img src="/images/google.png" alt="Google"/></a>
+		<div id="TEST"></div>
+
     <script>
       var email = document.location.hash || "Nobody D:";
       document.getElementById('email').innerHTML = email
