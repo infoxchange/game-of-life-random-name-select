@@ -18,8 +18,8 @@ app.use(express.static(__dirname + '/public'));
 
 auth.setupRoutes(app);
 
-app.listen(3000);
-console.log('Listening on port 3000');
+app.listen(config.port);
+console.log('Listening on port ' + config.port);
 
 app.use(function(err, req, res, next){
   console.error(err.stack);
