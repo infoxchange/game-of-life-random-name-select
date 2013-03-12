@@ -32,9 +32,39 @@ function run() {
     queue.push({ user: user, cycle: cycle });
 }
 
+function n(v) {
+    return typeof v === 'undefined' ? 0 : v;
+}
+
 function process(data) {
-    // TODO: write this
-    return data;
+    var height = data.length;
+    var width = data[0].length;
+    var newdata = Array(height);
+    for (var y = 0; y < height; y++) {
+        newdata[y] = Array(width);
+        for (var x = 0; x < width; x++) {
+            var around =
+                n(data[y - 1][x - 1]) +
+                n(data[y - 1][x    ]) +
+                n(data[y - 1][x + 1]) +
+                n(data[y    ][x - 1]) +
+                n(data[y    ][x + 1]) +
+                n(data[y + 1][x - 1]) +
+                n(data[y + 1][x    ]) +
+                n(data[y + 1][x + 1]);
+
+            var res;
+            if (around < 2 || around > 3)
+                res = 0;
+            else if (around == 3)
+                res = 1;
+            else
+                res = data[y][x];
+
+            newdata[y][x] = res;
+        }
+    }
+    return newdata;
 }
 
 exports.addjob = addjob;
