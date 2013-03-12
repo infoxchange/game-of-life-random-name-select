@@ -1,36 +1,76 @@
 // a data matrix is a two-dimensional JS array (first by y, then by x)
 // user id is arbitrary string
 // usage:
-// addjob({ user: "someone@gmail.com", data: [[0,1,0],[1,0,0],[0,1,1]] });
+// addJob({ user: "someone@gmail.com", data: [[0,1,0],[1,0,0],[0,1,1]] });
 // run(); // runs one job only
 // newdata = last("someone@gmail.com");
 
+// Queue management
+
+var queue = []; // array by cycles, then hashes by user
+
+function _addJob(user, cycle) {
+  queue[cycle] = queue[cycle] || [];
+  queue[cycle].push(user);
+}
+
+function currentCycle() {
+  for (var i = 0; i < queue.length; i++) {
+    if (queue[i].length)
+      return i;
+  }
+  return queue.length;
+}
+
+function _getJob() {
+  for (var i = 0; i < queue.length; i++) {
+    if (queue[i].length)
+      return queue[i].shift();
+  }
+  return undefined;
+}
+
+// State management
+
 var state = {}; // hash by user ID, then array by cycle number, then bit matrix
 
-var queue = []; // array of { user: string, cycle: integer }
-
-function addjob(input) {
+function addJob(input) {
   var user = input.user;
   var data = input.data;
   state[user] = [data];
-  queue.push({ user: user, cycle: 0 });
+  _addJob(user, 0);
 }
 
 function last(user) { // return { cycle: integer, data: bit matrix }
+  var userdata = state[user];
+  if (typeof(userdata) === 'undefined') return {};
   var cycle = state[user].length - 1;
   return state[user][cycle];
 }
 
+function all() {
+  var res = {};
+  for (var u in state) {
+    if (state.hasOwnProperty(u)) {
+      res[u] = last(u);
+    }
+  }
+  return res;
+}
+
 function run() {
-  var job = queue.shift();
+  var job = _getJob();
+  if (typeof(job) === 'undefined') return;
   var user = job.user;
   var cycle = job.cycle;
   var data = state[user][cycle];
   var newdata = process(data);
   cycle++;
   state[user][cycle] = newdata;
-  queue.push({ user: user, cycle: cycle });
+  _addJob(user, cycle);
 }
+
+// Processing
 
 function n(data, x, y) {
   var r = data[y];
@@ -70,6 +110,8 @@ function process(data) {
   return newdata;
 }
 
-exports.addjob = addjob;
+exports.addJob = addJob;
+exports.all = all;
+exports.currentCycle = currentCycle;
 exports.last = last;
 exports.run = run;
