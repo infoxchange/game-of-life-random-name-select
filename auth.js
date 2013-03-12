@@ -2,6 +2,7 @@ var config = require('./config'),
     passport = require('passport'),
 
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 
 
@@ -19,7 +20,7 @@ function ensureAuthenticated(req, res, next) {
 passport.use(new GoogleStrategy({
     clientID: config.googleApi.clientID,
     clientSecret: config.googleApi.clientSecret,
-    callbackURL: 'http://localhost:3000/auth/google/callback'
+    callbackURL: config.baseURL + '/auth/google/callback'
   },
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
