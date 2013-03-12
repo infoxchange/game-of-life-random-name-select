@@ -34,6 +34,11 @@ app.get('/me', function (req, res) {
   res.end(JSON.stringify(data));
 });
 
+app.get('/all', function (req, res) {
+  var data = worker.all();
+  res.end(JSON.stringify(data));
+});
+
 app.listen(config.port);
 console.log('Listening on port ' + config.port);
 
