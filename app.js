@@ -38,6 +38,11 @@ app.get('/all', function (req, res) {
   res.end(JSON.stringify(data));
 });
 
+app.get('/clear', function (req, res) {
+  worker.clear();
+  res.redirect('/');
+});
+
 app.listen(config.port);
 console.log('Listening on port ' + config.port);
 

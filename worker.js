@@ -103,6 +103,11 @@ function draw() {
   return res;
 }
 
+function clear() {
+  queue = [];
+  state = {};
+}
+
 // Actual running
 
 var timers = require('timers');
@@ -178,6 +183,7 @@ function process(data) {
 
 exports.addJob = addJob;
 exports.all = all;
+exports.clear = clear;
 exports.draw = draw;
 exports.currentCycle = currentCycle;
 exports.last = last;
