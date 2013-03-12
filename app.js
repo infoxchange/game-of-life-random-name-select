@@ -1,15 +1,18 @@
-var express = require('express'),
+var config = require('./config'),
+
+    express = require('express'),
     passport = require('passport'),
 
-    GoogleStrategy = require('passport-google').Strategy;
+    GoogleStrategy = require('passport-google-oauth').OAuthStrategy;
 
 var app = express();
-
+console.dir(config)
 passport.use(new GoogleStrategy({
-    returnURL: 'http://ix.org.au/loginSuccess',
-    realm: 'ix.org.au'
+    consumerKey: config.googleApi.consumerKey,
+    consumerSecret: config.googleApi.consumerSecret,
+    callbackURL: ''
   },
-  function(identifier, profile, done) {
+  function(token, tokenSecret, profile, done) {
     /*
      * do the login somehow..... WIP <_<
      */
