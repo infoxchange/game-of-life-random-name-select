@@ -8,19 +8,14 @@ Installation
 ------------
 
 1. Install node
-
 <pre>
 sudo apt-get install nodejs
 </pre>
-
 2. Clone this repo
-
 <pre>
 git clone https://github.com/infoxchange/game-of-life-random-name-select.git
 </pre>
-
 3. Start the app
-
 <pre>
 cd game-of-life-random-name-select
 node app
