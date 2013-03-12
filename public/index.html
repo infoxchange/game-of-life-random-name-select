@@ -1,8 +1,15 @@
 <html>
-    <head>
-        <title>Life is random!</title>
-    </head>
-    <body>
-        <a href="/auth/google">Google</a>
-    </body>
+  <head>
+    <title>Life is random!</title>
+  </head>
+  <body>
+    <h1>Logged in as: <span id="email">Nobody D:</span></h1>
+    
+    <h2>Log in with:</h2>
+    <a href="/auth/google">Google</a>
+    <script>
+      var email = document.location.hash || "Nobody D:";
+      document.getElementById('email').innerHTML = email
+    </script>
+  </body>
 </html>
