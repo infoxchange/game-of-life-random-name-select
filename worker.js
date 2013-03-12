@@ -180,3 +180,4 @@ exports.currentCycle = currentCycle;
 exports.last = last;
 exports.run = run;
 exports.score = score;
+exports.users = users;
