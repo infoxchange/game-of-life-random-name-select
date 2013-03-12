@@ -3,13 +3,13 @@ var config = require('./config'),
     express = require('express'),
     passport = require('passport'),
 
-    GoogleStrategy = require('passport-google-oauth').OAuthStrategy;
+    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 var app = express();
 
 passport.use(new GoogleStrategy({
-    consumerKey: config.googleApi.consumerKey,
-    consumerSecret: config.googleApi.consumerSecret,
+    clientID: config.googleApi.clientID,
+    clientSecret: config.googleApi.clientSecret,
     callbackURL: 'http://localhost:3000/auth/google/callback'
   },
   function(token, tokenSecret, profile, done) {
@@ -20,7 +20,10 @@ passport.use(new GoogleStrategy({
 ));
 
 app.configure(function() {
+  app.use(express.cookieParser());
+  app.use(express.session({ secret: config.cookieSecret }));
   app.use(passport.initialize());
+  app.use(passport.session());
 });
 
 app.use(express.static(__dirname + '/public'));

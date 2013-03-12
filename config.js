@@ -1,6 +1,7 @@
 module.exports = {
+  cookieSecret: 'change-me',
   googleApi: {
-    consumerKey:    'change-me',
-    consumerSecret: 'change-me'
+    clientID:     'change-me',
+    clientSecret: 'change-me'
   }
 }
