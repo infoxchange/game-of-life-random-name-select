@@ -15,9 +15,13 @@ sudo apt-get install nodejs
 <pre>
 git clone https://github.com/infoxchange/game-of-life-random-name-select.git
 </pre>
-3. Start the app
+3. Install dependencies
 <pre>
 cd game-of-life-random-name-select
+npm install
+</pre>
+4. Start the app
+<pre>
 node app
 </pre>
 
