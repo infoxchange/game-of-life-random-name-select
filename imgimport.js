@@ -6,14 +6,9 @@ var fs = require('fs');
 function importGravatar(email, callback) {
   var url = gravatar.url(email);
   var filename = email + ".jpeg";
-  var file = fs.createWriteStream(filename);
-  http.get(url, function (response) {
-    response.on('data', function(data) {
-      file.write(data);
-    }).on('end', function() {
-      file.end();
-      importImage(filename, callback);
-    });
+  var wget = child_process.spawn('wget', [url, '-O', filename]);
+  wget.stdout.on('close', function () {
+    importImage(filename, callback);
   });
 }
 

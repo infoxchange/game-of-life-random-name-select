@@ -21,12 +21,16 @@ app.use(express.static(__dirname + '/public'));
 auth.setupRoutes(app);
 
 app.get('/participate', function (req, res) {
-  var email = req.user.email;
-  imgimport.importGravatar(email, function (data) {
-    worker.addJob({ user: email, data: data });
-    worker.run();
-  });
-  res.end('');
+  if (!req.user) {
+    res.redirect('/');
+  } else {
+    var email = req.user.email;
+    imgimport.importGravatar(email, function (data) {
+      worker.addJob({ user: email, data: data });
+      worker.run();
+    });
+    res.end('');
+  }
 });
 
 app.get('/all', function (req, res) {
