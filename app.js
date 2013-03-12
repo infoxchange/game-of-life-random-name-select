@@ -29,11 +29,6 @@ app.get('/participate', function (req, res) {
   res.end('');
 });
 
-app.get('/me', function (req, res) {
-  var data = worker.last(req.user.email);
-  res.end(JSON.stringify(data));
-});
-
 app.get('/all', function (req, res) {
   var data = worker.all();
   res.end(JSON.stringify(data));

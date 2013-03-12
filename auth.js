@@ -50,7 +50,7 @@ function setupRoutes(app) {
    * All
    */
   app.get('/account', ensureAuthenticated, function(req, res){
-    res.redirect('/#' + req.user.email)
+    res.redirect('/participate')
   });
   app.get('/logout', function(req, res){
     req.logout();

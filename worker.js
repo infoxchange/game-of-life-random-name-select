@@ -62,7 +62,12 @@ function all() {
   var res = {};
   for (var u in state) {
     if (state.hasOwnProperty(u)) {
-      res[u] = last(u);
+      res[u] = {
+        user: u,
+        cycle: state[u].length - 1,
+        data: last(u),
+        score: score(u),
+      }
     }
   }
   return res;
@@ -106,11 +111,9 @@ var scheduled = false;
 
 var min_iterations = 1000;
 
-var per_timer = 1000;
-
 function start() {
   if (scheduled) return;
-  timers.setTimeout(run, 0);
+  timers.setTimeout(run, 10);
   scheduled = true;
 }
 
