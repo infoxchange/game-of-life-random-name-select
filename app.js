@@ -6,11 +6,11 @@ var config = require('./config'),
     GoogleStrategy = require('passport-google-oauth').OAuthStrategy;
 
 var app = express();
-console.dir(config)
+
 passport.use(new GoogleStrategy({
     consumerKey: config.googleApi.consumerKey,
     consumerSecret: config.googleApi.consumerSecret,
-    callbackURL: ''
+    callbackURL: 'http://localhost:3000/auth/google/callback'
   },
   function(token, tokenSecret, profile, done) {
     /*
@@ -24,13 +24,13 @@ app.configure(function() {
 });
 
 app.get('/', function(req, res){
-  var body = '<html><body><a href="/login/google">Google</a></body></html>';
+  var body = '<html><body><a href="/auth/google">Google</a></body></html>';
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('Content-Length', body.length);
   res.end(body);
 });
 
-app.get('/login/google', passport.authenticate('google'));
+app.get('/auth/google', passport.authenticate('google'));
 
 app.listen(3000);
 console.log('Listening on port 3000');
