@@ -47,7 +47,7 @@ function update() {
 			var tdiv = $('<div />');
 			initRaster(tdiv);
 			updateRaster(tdiv, arr[i].data);
-			div.append(arr[i].user + " (" + arr[i].score + ")");
+			$(div).prepend('<p>' + user + " (" + arr[i].score + ")" + '</p>');
 			div.append(tdiv);
 			asdf.append(div);
 		}
