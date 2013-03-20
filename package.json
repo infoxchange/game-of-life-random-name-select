@@ -3,14 +3,10 @@
   "description": "Select a random name using Conway's Game Of Life and Facebook/Twitter/Google profile image.",
   "version": "0.0.1",
   "private": true,
-  "engines": {
-    "node": "0.6.x"
-  },
   "dependencies": {
     "express": "3.x",
     "passport": "0.1.x",
     "passport-google-oauth": "0.1.x",
-    "gravatar": "~1.0.6",
-    "wrench": "1.4.x"
+    "gravatar": "~1.0.6"
   }
 }

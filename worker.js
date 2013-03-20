@@ -6,10 +6,8 @@
 // newdata = last("someone@gmail.com");
 
 // Queue management
-var fs = require('fs'),
-    fsw = require('wrench'),
-    timers = require('timers'),
-    queue = []; // array by cycles, then hashes by user
+
+var queue = []; // array by cycles, then hashes by user
 
 function _addJob(user, cycle) {
   queue[cycle] = queue[cycle] || [];
@@ -34,90 +32,49 @@ function _getJob() {
 
 // State management
 
-//var state = {}; // hash by user ID, then array by cycle number, then bit matrix
-function state(user, cycle, data) {
-  var dirname = 'games/' + user,
-      filename = dirname + '/' + cycle,
-      encoding = 'utf8';
-
-  fsw.mkdirSyncRecursive(dirname);
-
-  //
-  // If data param is set, read and parse JSON to return
-  // If data param is not set, stringify data and write to disk
-  //
-  if (typeof(data) === 'undefined') {
-    if (!fs.existsSync(filename))
-      return {};
-
-    return JSON.parse(
-      fs.readFileSync(filename, {
-        flag: 'r',
-        encoding: encoding
-      })
-    );
-  } else {
-    //
-    // This has changed format at some point after node 0.6!...
-    // Don't be confused and spend like a whole friggen hour
-    // figuring out what's happening!
-    //
-    return fs.writeFileSync(filename, JSON.stringify(data));
-  }
-}
+var state = {}; // hash by user ID, then array by cycle number, then bit matrix
 
 function addJob(input) {
-  var user = input.user,
-      data = input.data;
-  state(user, 0, data);
+  var user = input.user;
+  var data = input.data;
+  state[user] = [data];
   _addJob(user, 0);
 }
 
 function last(user) { // return { cycle: integer, data: bit matrix }
-  var dirname = 'games/' + user,
-      dirList, fn, cycle;
-
-  fsw.mkdirSyncRecursive(dirname);
-
-  dirList = fs.readdirSync(dirname);
-  for (fn in dirList) {
-    if (!dirList.hasOwnProperty(fn)) continue;
-
-    fn = parseInt(fn, 10);
-    if (!isNan(fn) && fn > cycle)
-      cycle = fn;
-  }
-
-  return state(user, cycle);
+  var userdata = state[user];
+  if (typeof(userdata) === 'undefined') return {};
+  var cycle = state[user].length - 1;
+  return state[user][cycle];
 }
 
 function users() {
-  var dirList, fn, res = [];
-
-  fsw.mkdirSyncRecursive('games');
-  dirList = fs.readdirSync('games');
-  return dirList;
-}
-
-function all() {
-  var res = {},
-      userList = users(),
-      lastData;
-  for (var u in userList) {
-    if (!userList.hasOwnProperty(u)) continue;
-
-    lastData = last(u);
-    res[u] = {
-      user: u,
-      cycle: lastData.cycle,
-      data: lastData,
-      score: score(lastData),
+  var res = [];
+  for (var u in state) {
+    if (state.hasOwnProperty(u)) {
+      res.push(u);
     }
   }
   return res;
 }
 
-function score(data) {
+function all() {
+  var res = {};
+  for (var u in state) {
+    if (state.hasOwnProperty(u)) {
+      res[u] = {
+        user: u,
+        cycle: state[u].length - 1,
+        data: last(u),
+        score: score(u),
+      }
+    }
+  }
+  return res;
+}
+
+function score(user) {
+  var data = last(user);
   var res = 0;
   for (var y = 0; y < data.length; y++) {
     for (var x = 0; x < data.length; x++) {
@@ -126,26 +83,21 @@ function score(data) {
   }
   return res;
 }
-function userScore(user) {
-  return score(last(user));
-}
 
 function draw() {
-  var max = undefined,
-      res = false,
-      usersList = users(),
-      us;
-  for (var u in usersList) {
-    if (!users.hasOwnProperty(u)) continue;
-    
-    us = userScore(u);
-    if (typeof(max) === 'undefined') {
-      max = us;
-    } else if (max == us) {
-      res = true;
-    } else if (max < us) {
-      max = us;
-      res = false;
+  var max = undefined;
+  var res = false;
+  for (var u in state) {
+    if (state.hasOwnProperty(u)) {
+      var us = score(u);
+      if (typeof(max) === 'undefined') {
+        max = us;
+      } else if (max == us) {
+        res = true;
+      } else if (max < us) {
+        max = us;
+        res = false;
+      }
     }
   }
   return res;
@@ -153,10 +105,12 @@ function draw() {
 
 function clear() {
   queue = [];
-  fsw.rmdirSyncRecursive('games', true);
+  state = {};
 }
 
 // Actual running
+
+var timers = require('timers');
 
 var scheduled = false;
 
@@ -169,24 +123,20 @@ function start() {
 }
 
 function run() {
-  var scheduled = false,
-      job = _getJob(),
-      user, cycle, data, newdata;
-  
-  if (typeof(job) === 'undefined') return;
-
-  user = job.user;
-  cycle = job.cycle;
+  scheduled = false;
+  var job = _getJob();
+  if (typeof(job) === 'undefined') {
+    return;
+  }
+  var user = job.user;
+  var cycle = job.cycle;
   if (cycle >= min_iterations) {
     return;
   }
-
-  data = state(user, cycle);
-  newdata = process(data);
-
+  var data = state[user][cycle];
+  var newdata = process(data);
   cycle++;
-  state(user, cycle, newdata);
-
+  state[user][cycle] = newdata;
   _addJob(user, cycle);
   start();
 }
@@ -201,14 +151,13 @@ function n(data, x, y) {
 }
 
 function process(data) {
-  var height = data.length,
-      width = data[0].length,
-      newdata = Array(height),
-      y, x, around, res;
-  for (y = 0; y < height; y++) {
+  var height = data.length;
+  var width = data[0].length;
+  var newdata = Array(height);
+  for (var y = 0; y < height; y++) {
     newdata[y] = Array(width);
-    for (x = 0; x < width; x++) {
-      around =
+    for (var x = 0; x < width; x++) {
+      var around =
         n(data, x - 1, y - 1) +
         n(data, x - 1, y  ) +
         n(data, x - 1, y + 1) +
@@ -218,7 +167,7 @@ function process(data) {
         n(data, x + 1, y  ) +
         n(data, x + 1, y + 1);
 
-      res;
+      var res;
       if (around < 2 || around > 3)
         res = 0;
       else if (around == 3)
